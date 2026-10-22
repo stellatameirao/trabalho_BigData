@@ -78,10 +78,17 @@ A base final possui um registro por identificador de candidatura.
 | Identificadores duplicados na base final | 0 |
 | Datas de nascimento ausentes | 46 |
 | Situações eleitorais ausentes | 16.167 |
+| Candidaturas com receita positiva | 378.274 |
+| Candidaturas sem receita | 85.395 |
+| Receitas nulas | 0 |
+| Receitas negativas | 0 |
+| Total de recursos de campanha | R$ 7.041.968.332,19 |
 
 A versão tratada foi exportada para `dados/tratados/base_eleicoes_2024_tratada.csv`.
 
 Também foi gerada a versão `dados/tratados/base_eleicoes_2024_banco.csv`, organizada para a importação no PostgreSQL.
+
+Os resultados de quantidade de registros e de receitas foram conferidos por meio de consultas SQL no PostgreSQL. As contagens de candidaturas com receita, sem receita e com valores nulos também foram verificadas no CSV tratado, apresentando os mesmos resultados.
 
 ## 5. Modelagem e armazenamento
 
@@ -112,6 +119,8 @@ A estrutura possui 15 atributos:
 O script de criação da tabela está disponível em `dados/sql/criar_tabela.sql`.
 
 As consultas para verificação da carga e integridade dos registros estão em `dados/sql/consultas_validacao.sql`.
+
+As evidências dos resultados obtidos diretamente no PostgreSQL estão disponíveis no documento `documentacao/evidencias/evidencias_validacao_sql.pdf`.
 
 ## 6. Infraestrutura em nuvem
 
@@ -203,6 +212,9 @@ projeto-big-data/
 │   └── sql/
 │       ├── criar_tabela.sql
 │       └── consultas_validacao.sql
+├── documentacao/
+│   └── evidencias/
+│       └── evidencias_validacao_sql.pdf
 ├── etl/
 │   ├── tratamento_dados.py
 │   └── contar_registros.py
@@ -216,15 +228,21 @@ projeto-big-data/
 └── README.md
 ```
 
+A pasta `dados/brutos/` contém os arquivos originais utilizados no processamento, mantidos localmente e excluídos do versionamento.
+
+A pasta `dados/tratados/` contém os arquivos gerados pelo ETL.
+
+A pasta `documentacao/evidencias/` reúne as capturas de tela das consultas SQL executadas no PostgreSQL, organizadas em um documento PDF para comprovação da carga e validação dos dados.
+
 ## 10. Reprodução do processamento
 
 ### 10.1 Pré-requisitos
 
-- Python 3
-- Biblioteca Pandas
-- PostgreSQL para armazenamento dos dados
-- Terraform para gerenciamento da infraestrutura
-- Conta e serviço Aiven, quando for utilizada a infraestrutura em nuvem
+- Python 3.
+- Biblioteca Pandas.
+- PostgreSQL para armazenamento dos dados.
+- Terraform para gerenciamento da infraestrutura.
+- Conta e serviço Aiven, quando for utilizada a infraestrutura em nuvem.
 
 ### 10.2 Preparação das bases
 
@@ -256,6 +274,18 @@ Em seguida, importar o arquivo `dados/tratados/base_eleicoes_2024_banco.csv` par
 
 Executar as consultas disponíveis em `dados/sql/consultas_validacao.sql` para verificar a quantidade de registros e a integridade da carga.
 
+As verificações incluem:
+
+- Quantidade total de candidaturas e identificação de registros duplicados.
+- Distribuição dos registros por ano eleitoral.
+- Identificação de valores ausentes e receitas negativas.
+- Distribuição das candidaturas por gênero e raça/cor.
+- Quantificação das candidaturas com e sem receitas.
+- Cálculo do total de recursos financeiros de campanha.
+- Análise dos recursos recebidos por gênero e raça/cor.
+
+Os resultados esperados estão apresentados na seção 4.4, e as evidências de execução encontram-se em `documentacao/evidencias/evidencias_validacao_sql.pdf`.
+
 ### 10.7 Infraestrutura
 
 A configuração do Terraform descreve o serviço PostgreSQL utilizado na Aiven. Para gerenciar o serviço existente, é necessário configurar a autenticação, os valores das variáveis e o estado do Terraform.
@@ -267,5 +297,7 @@ A execução de `terraform apply` não faz parte da reprodução automática do 
 A etapa de preparação e armazenamento resultou em uma base integrada com 463.669 candidaturas municipais de 2024 e 15 atributos, disponibilizada em arquivos CSV e em uma instância PostgreSQL na nuvem.
 
 O uso de Python e Pandas permitiu tratar e consolidar os dados eleitorais, enquanto o PostgreSQL possibilitou sua organização relacional. A utilização do Terraform complementou a solução com uma representação versionada da infraestrutura.
+
+As consultas de validação confirmaram a ausência de identificadores duplicados, a consistência das contagens de receitas entre o CSV tratado e o banco de dados e a disponibilidade de informações para análises sobre financiamento eleitoral.
 
 A base preparada poderá apoiar análises posteriores sobre representatividade de gênero, raça/cor, distribuição de recursos financeiros e resultados eleitorais.
