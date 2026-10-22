@@ -3,3 +3,11 @@ __pycache__/
 *.pyc
 
 dados/brutos/
+
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*.tfvars
+!terraform/*.tfvars.example
+terraform/crash.log
+terraform/crash.*.log
